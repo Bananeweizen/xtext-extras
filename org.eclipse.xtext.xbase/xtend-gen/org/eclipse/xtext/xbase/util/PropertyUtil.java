@@ -8,6 +8,7 @@
 package org.eclipse.xtext.xbase.util;
 
 import java.beans.Introspector;
+import java.util.Locale;
 import org.eclipse.xtext.common.types.JvmFeature;
 import org.eclipse.xtext.common.types.JvmOperation;
 
@@ -65,5 +66,43 @@ public class PropertyUtil {
   
   protected static boolean startsWithPrefix(final String methodName, final String prefix, final int prefixLength) {
     return (((methodName.length() > prefixLength) && methodName.startsWith(prefix)) && Character.isUpperCase(methodName.charAt(prefixLength)));
+  }
+  
+  /**
+   * @Nullable
+   */
+  public static String tryGetAsPropertyName(final String name) {
+    int _length = name.length();
+    boolean _equals = (_length == 1);
+    if (_equals) {
+      boolean _isUpperCase = Character.isUpperCase(name.charAt(0));
+      if (_isUpperCase) {
+        return null;
+      }
+      return name.toUpperCase(Locale.ENGLISH);
+    } else {
+      int _length_1 = name.length();
+      boolean _greaterThan = (_length_1 > 1);
+      if (_greaterThan) {
+        boolean _isUpperCase_1 = Character.isUpperCase(name.charAt(1));
+        if (_isUpperCase_1) {
+          boolean _isUpperCase_2 = Character.isUpperCase(name.charAt(0));
+          if (_isUpperCase_2) {
+            return name;
+          }
+          return null;
+        } else {
+          boolean _isUpperCase_3 = Character.isUpperCase(name.charAt(0));
+          if (_isUpperCase_3) {
+            return null;
+          } else {
+            String _upperCase = name.substring(0, 1).toUpperCase(Locale.ENGLISH);
+            String _substring = name.substring(1);
+            return (_upperCase + _substring);
+          }
+        }
+      }
+    }
+    return null;
   }
 }

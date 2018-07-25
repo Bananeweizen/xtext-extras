@@ -47,6 +47,7 @@ import org.eclipse.xtext.xbase.scoping.batch.IBatchScopeProvider;
 import org.eclipse.xtext.xbase.scoping.batch.IFeatureNames;
 import org.eclipse.xtext.xbase.scoping.featurecalls.OperatorMapping;
 import org.eclipse.xtext.xbase.typesystem.util.IVisibilityHelper;
+import org.eclipse.xtext.xbase.util.PropertyUtil;
 import org.eclipse.xtext.xtype.XImportDeclaration;
 import org.eclipse.xtext.xtype.XImportSection;
 
@@ -153,7 +154,8 @@ public class SerializerScopeProvider implements IScopeProvider, IFeatureNames {
 	}
 
 	protected IScope getExecutableScope(XAbstractFeatureCall call, JvmIdentifiableElement feature) {
-		QualifiedName name = QualifiedName.create(feature.getSimpleName());
+		final String simpleName = feature.getSimpleName();
+		QualifiedName name = QualifiedName.create(simpleName);
 		if (call.isOperation()) {
 			QualifiedName operator = getOperator(call, name);
 			if (operator == null) {
@@ -162,21 +164,25 @@ public class SerializerScopeProvider implements IScopeProvider, IFeatureNames {
 			return new SingletonScope(EObjectDescription.create(operator, feature), IScope.NULLSCOPE);
 		}
 		if (call instanceof XAssignment) {
-			String propertyName = Strings.toFirstLower(feature.getSimpleName().substring(3));
+			String propertyName = Strings.toFirstLower(simpleName.substring(3));
 			return new SingletonScope(EObjectDescription.create(propertyName, feature), IScope.NULLSCOPE);
 		}
 		if (call.isExplicitOperationCallOrBuilderSyntax() || ((JvmExecutable) feature).getParameters().size() > 1
 				|| (!call.isExtension() && ((JvmExecutable) feature).getParameters().size() == 1)) {
 			return new SingletonScope(EObjectDescription.create(name, feature), IScope.NULLSCOPE);
 		}
-		if (feature.getSimpleName().startsWith("get") || feature.getSimpleName().startsWith("is")) {
+		if (simpleName.startsWith("get") || simpleName.startsWith("is")) {
 			List<IEObjectDescription> result = Lists.newArrayListWithCapacity(2);
-			if (feature.getSimpleName().startsWith("get")) {
-				String propertyName = Strings.toFirstLower(feature.getSimpleName().substring(3));
-				result.add(EObjectDescription.create(propertyName, feature));
+			if (simpleName.startsWith("get")) {
+				String propertyName = PropertyUtil.tryGetAsPropertyName(simpleName.substring(3));
+				if (propertyName != null) {
+					result.add(EObjectDescription.create(propertyName, feature));
+				}
 			} else {
-				String propertyName = Strings.toFirstLower(feature.getSimpleName().substring(2));
-				result.add(EObjectDescription.create(propertyName, feature));
+				String propertyName = PropertyUtil.tryGetAsPropertyName(simpleName.substring(2));
+				if (propertyName != null) {
+					result.add(EObjectDescription.create(propertyName, feature));
+				}
 			}
 			result.add(EObjectDescription.create(name, feature));
 			return new SimpleScope(result);

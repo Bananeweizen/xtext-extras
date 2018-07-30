@@ -1,25 +1,6 @@
 ext.title = 'Xtext Standalone Builder'
 description = 'Builder infrastructure for Xtext.'
 
-buildscript {
-  repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-  dependencies {
-    classpath "io.spring.gradle:dependency-management-plugin:1.0.5.RELEASE"
-  }
-}
-
-apply plugin: "io.spring.dependency-management"
-
-dependencyManagement {
-  imports {
-    mavenBom 'org.eclipse.xtext:xtext-dev.bom:2.15.0-SNAPSHOT'
-  }
-}
-
 dependencies {
 	compile project(':org.eclipse.xtext.xbase')
 	compile project(':org.eclipse.xtext.common.types')

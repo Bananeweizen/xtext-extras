@@ -34,7 +34,7 @@
 		</repository>
 		<repository>
 			<id>maven3</id>
-			<url>http://services.typefox.io/open-source/jenkins/job/xtext-core/job/master/lastSuccessfulBuild/artifact/build/maven-repository/</url>
+			<url>http://services.typefox.io/open-source/jenkins/job/xtext-core/job/sz_bom/lastSuccessfulBuild/artifact/build/maven-repository/</url>
 		</repository>
 	</repositories>
 

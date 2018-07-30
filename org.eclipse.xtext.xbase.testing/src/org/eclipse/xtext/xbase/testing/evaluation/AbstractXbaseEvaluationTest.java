@@ -4990,16 +4990,71 @@ public abstract class AbstractXbaseEvaluationTest extends Assert {
 		}
 	}
 	
-	@Test 
+	@Test
 	public void testNullSaveLazyEvaluation1() throws Exception {
 		assertEvaluatesTo(0, "{ var x = 0; (null as String)?.substring(x = 1); return x; }");
 	}
 	
-	@Test 
+	@Test
 	public void testNullSaveLazyEvaluation2() throws Exception {
 		assertEvaluatesTo(0, "{ val x = <String>newArrayList; var c = [|x += 'x';1]; (null as String)?.substring(c.apply); return x.size; }");
 	}
-	
+
+	@Test
+	public void testShorthandLowerbool() throws Exception {
+		assertEvaluatesTo(true, "(new testdata.ShorthandNames() => [ lowerbool = true ]).lowerbool");
+	}
+
+	@Test
+	public void testShorthandLower() throws Exception {
+		assertEvaluatesTo(1, "(new testdata.ShorthandNames() => [ lower = 1 ]).lower");
+	}
+
+	@Test
+	public void testShorthandCamelCaseBool() throws Exception {
+		assertEvaluatesTo(true, "(new testdata.ShorthandNames() => [ camelCaseBool = true ]).camelCaseBool");
+	}
+
+	@Test
+	public void testShorthandCamelCase() throws Exception {
+		assertEvaluatesTo(1, "(new testdata.ShorthandNames() => [ camelCase = 1 ]).camelCase");
+	}
+
+	@Test
+	public void testShorthandUpperbool() throws Exception {
+		assertEvaluatesTo(true, "(new testdata.ShorthandNames() => [ UPPERBOOL = true ]).UPPERBOOL");
+	}
+
+	@Test
+	public void testShorthandUpper() throws Exception {
+		assertEvaluatesTo(1, "(new testdata.ShorthandNames() => [ UPPER = 1 ]).UPPER");
+	}
+
+	@Test
+	public void testShorthandJustGetAndSet() throws Exception {
+		assertEvaluatesTo(1, "(new testdata.ShorthandNames() => [ set = 1 ]).get");
+	}
+
+	@Test
+	public void testShorthandJustIs() throws Exception {
+		assertEvaluatesTo(true, "(new testdata.ShorthandNames()).is");
+	}
+
+	@Test
+	public void testShorthandFirstAndSecondUpper() throws Exception {
+		assertEvaluatesTo(1, "(new testdata.ShorthandNames() => [ UPper = 1 ]).UPper");
+	}
+
+	@Test
+	public void testShorthandFirstAndSecondUpperBool() throws Exception {
+		assertEvaluatesTo(true, "(new testdata.ShorthandNames() => [ UPperBool = true ]).UPperBool");
+	}
+
+	@Test
+	public void testShorthandOneLetter() throws Exception {
+		assertEvaluatesTo(1, "(new testdata.ShorthandNames() => [ x = 1 ]).x");
+	}
+
 	/**
 	 * @param expression the input that should be executed 
 	 */

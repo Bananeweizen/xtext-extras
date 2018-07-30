@@ -13,6 +13,7 @@ import org.eclipse.xtext.common.types.JvmOperation
 import static extension java.beans.Introspector.*
 import static extension java.lang.Character.*
 import java.util.Locale
+import org.eclipse.xtext.util.Strings
 
 /**
  * @author kosyakov - Initial contribution and API
@@ -50,21 +51,26 @@ class PropertyUtil {
 	}
 
 	/**
-	 * Returns the name as a property name, e.g. a prefix {@code get}, {@code is} or {@code set}
-	 * can be used with the result of this method.
+	 * Returns the shorthand name for a function
+	 * e.g. URI for getURI; uri for setUri; uri for getuRI; enum for isEnum
 	 * If the given name is invalid, the result is <code>null</code>.
+	 * 
+	 * @param fullName the fullName of the function we're trying to shorthand (including 'get' or 'is')
 	 * 
 	 * @since 2.15
 	 */
 	/* @Nullable */
-	def static String tryGetAsPropertyName(String name) {
-		if (name.length() == 1) { // e.g. Point.getX()
-			if (Character.isUpperCase(name.charAt(0))) {
-				// X is not a valid sugar for getX()
-				return null;
+	def static String tryGetShorthandName(String fullName) {
+		val name = if (fullName.startsWith("get") || fullName.startsWith("set")) {
+				fullName.substring(3)
+			} else if (fullName.startsWith("is")) {
+				fullName.substring(2)
+			} else {
+				return null
 			}
-			// x is a valid sugar for getX
-			return name.toUpperCase(Locale.ENGLISH);
+
+		if (name.length() == 1) { // e.g. Point.getX()
+			return name.toLowerCase(Locale.ENGLISH);
 		} else if (name.length() > 1) {
 			if (Character.isUpperCase(name.charAt(1))) { // e.g. Resource.getURI
 				// if second char is uppercase, the name itself is the sugar variant
@@ -74,14 +80,9 @@ class PropertyUtil {
 				}
 				// if the first character is not upper case, it's not a valid sugar variant
 				// e.g. uRI is no sugar access for getURI
-				return null;
-			} else if (Character.isUpperCase(name.charAt(0))) {
-				// the first character is upper case, it is not valid property sugar, e.g.
-				// Class.CanonicalName does not map to Class.getCanonicalName
-				return null;
+				return name;
 			} else {
-				// code from java.beans.NameGenerator.capitalize()
-				return name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
+				return Strings.toFirstLower(name);
 			}
 		}
 		// length 0 is invalid

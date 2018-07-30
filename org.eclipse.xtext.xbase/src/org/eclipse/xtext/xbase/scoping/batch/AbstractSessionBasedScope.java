@@ -9,6 +9,7 @@ package org.eclipse.xtext.xbase.scoping.batch;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -83,7 +84,7 @@ public abstract class AbstractSessionBasedScope extends AbstractScope {
 	 * name and that one is used as a variant that should be processed. 
 	 */
 	protected void processAsPropertyNames(QualifiedName name, NameAcceptor acceptor) {
-		String nameAsPropertyName = PropertyUtil.tryGetAsPropertyName(name.toString());
+		String nameAsPropertyName = tryGetAsPropertyName(name.toString());
 		if (nameAsPropertyName != null) {
 			if (featureCall == null || featureCall instanceof XAssignment) {
 				String aliasedSetter = "set" + nameAsPropertyName;
@@ -108,6 +109,43 @@ public abstract class AbstractSessionBasedScope extends AbstractScope {
 		return PropertyUtil.getPropertyName(feature, methodName, getterParams, setterParams);
 	}
 	
+	/**
+	 * Returns the name as a property name, e.g. a prefix {@code get}, {@code is} or {@code set}
+	 * can be used with the result of this method.
+	 * If the given name is invalid, the result is <code>null</code>.
+	 */
+	/* @Nullable */
+	protected String tryGetAsPropertyName(String name) {
+		if (name.length() == 1) { // e.g. Point.getX()
+			if (Character.isUpperCase(name.charAt(0))) {
+				// X is not a valid sugar for getX()
+				return null;
+			}
+			// x is a valid sugar for getX
+			return name.toUpperCase(Locale.ENGLISH);
+		} else if (name.length() > 1) {
+			if (Character.isUpperCase(name.charAt(1))) { // e.g. Resource.getURI
+				// if second char is uppercase, the name itself is the sugar variant
+				// URI is the property name for getURI
+				if (Character.isUpperCase(name.charAt(0))) {
+					return name;
+				}
+				// if the first character is not upper case, it's not a valid sugar variant
+				// e.g. uRI is no sugar access for getURI
+				return null;
+			} else if (Character.isUpperCase(name.charAt(0))) {
+				// the first character is upper case, it is not valid property sugar, e.g.
+				// Class.CanonicalName does not map to Class.getCanonicalName
+				return null;
+			} else {
+				// code from java.beans.NameGenerator.capitalize()
+				return name.substring(0, 1).toUpperCase(Locale.ENGLISH) + name.substring(1);
+			}
+		}
+		// length 0 is invalid
+		return null;
+	}
+
 	/**
 	 * Clients may override to reject certain descriptions from the result. All subtypes of {@link AbstractSessionBasedScope}
 	 * in the framework code will delegate to this method to accumulate descriptions in a list.

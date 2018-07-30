@@ -11,6 +11,7 @@ import java.beans.Introspector;
 import java.util.Locale;
 import org.eclipse.xtext.common.types.JvmFeature;
 import org.eclipse.xtext.common.types.JvmOperation;
+import org.eclipse.xtext.util.Strings;
 
 /**
  * @author kosyakov - Initial contribution and API
@@ -71,35 +72,38 @@ public class PropertyUtil {
   /**
    * @Nullable
    */
-  public static String tryGetAsPropertyName(final String name) {
+  public static String tryGetShorthandName(final String fullName) {
+    String _xifexpression = null;
+    if ((fullName.startsWith("get") || fullName.startsWith("set"))) {
+      _xifexpression = fullName.substring(3);
+    } else {
+      String _xifexpression_1 = null;
+      boolean _startsWith = fullName.startsWith("is");
+      if (_startsWith) {
+        _xifexpression_1 = fullName.substring(2);
+      } else {
+        return null;
+      }
+      _xifexpression = _xifexpression_1;
+    }
+    final String name = _xifexpression;
     int _length = name.length();
     boolean _equals = (_length == 1);
     if (_equals) {
-      boolean _isUpperCase = Character.isUpperCase(name.charAt(0));
-      if (_isUpperCase) {
-        return null;
-      }
-      return name.toUpperCase(Locale.ENGLISH);
+      return name.toLowerCase(Locale.ENGLISH);
     } else {
       int _length_1 = name.length();
       boolean _greaterThan = (_length_1 > 1);
       if (_greaterThan) {
-        boolean _isUpperCase_1 = Character.isUpperCase(name.charAt(1));
-        if (_isUpperCase_1) {
-          boolean _isUpperCase_2 = Character.isUpperCase(name.charAt(0));
-          if (_isUpperCase_2) {
+        boolean _isUpperCase = Character.isUpperCase(name.charAt(1));
+        if (_isUpperCase) {
+          boolean _isUpperCase_1 = Character.isUpperCase(name.charAt(0));
+          if (_isUpperCase_1) {
             return name;
           }
-          return null;
+          return name;
         } else {
-          boolean _isUpperCase_3 = Character.isUpperCase(name.charAt(0));
-          if (_isUpperCase_3) {
-            return null;
-          } else {
-            String _upperCase = name.substring(0, 1).toUpperCase(Locale.ENGLISH);
-            String _substring = name.substring(1);
-            return (_upperCase + _substring);
-          }
+          return Strings.toFirstLower(name);
         }
       }
     }

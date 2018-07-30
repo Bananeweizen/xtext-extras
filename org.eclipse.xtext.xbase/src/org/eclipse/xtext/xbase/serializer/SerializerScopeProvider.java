@@ -164,30 +164,27 @@ public class SerializerScopeProvider implements IScopeProvider, IFeatureNames {
 			return new SingletonScope(EObjectDescription.create(operator, feature), IScope.NULLSCOPE);
 		}
 		if (call instanceof XAssignment) {
-			String propertyName = Strings.toFirstLower(simpleName.substring(3));
-			return new SingletonScope(EObjectDescription.create(propertyName, feature), IScope.NULLSCOPE);
+			String shorthandName = PropertyUtil.tryGetShorthandName(simpleName);
+			if (shorthandName != null) {
+				return new SingletonScope(EObjectDescription.create(shorthandName, feature), IScope.NULLSCOPE);
+			} else {
+				return IScope.NULLSCOPE;
+			}
 		}
 		if (call.isExplicitOperationCallOrBuilderSyntax() || ((JvmExecutable) feature).getParameters().size() > 1
 				|| (!call.isExtension() && ((JvmExecutable) feature).getParameters().size() == 1)) {
 			return new SingletonScope(EObjectDescription.create(name, feature), IScope.NULLSCOPE);
 		}
-		if (simpleName.startsWith("get") || simpleName.startsWith("is")) {
+
+		String shorthandName = PropertyUtil.tryGetShorthandName(simpleName);
+		if (shorthandName != null) {
 			List<IEObjectDescription> result = Lists.newArrayListWithCapacity(2);
-			if (simpleName.startsWith("get")) {
-				String propertyName = PropertyUtil.tryGetAsPropertyName(simpleName.substring(3));
-				if (propertyName != null) {
-					result.add(EObjectDescription.create(propertyName, feature));
-				}
-			} else {
-				String propertyName = PropertyUtil.tryGetAsPropertyName(simpleName.substring(2));
-				if (propertyName != null) {
-					result.add(EObjectDescription.create(propertyName, feature));
-				}
-			}
+			result.add(EObjectDescription.create(shorthandName, feature));
 			result.add(EObjectDescription.create(name, feature));
 			return new SimpleScope(result);
+		} else {
+			return new SingletonScope(EObjectDescription.create(name, feature), IScope.NULLSCOPE);
 		}
-		return new SingletonScope(EObjectDescription.create(name, feature), IScope.NULLSCOPE);
 	}
 
 	protected QualifiedName getOperator(XAbstractFeatureCall call, QualifiedName name) {

@@ -4,9 +4,9 @@ description = 'Generator for Xtext (superseded by org.eclipse.xtext.xtext.genera
 dependencies {
 	compile project(':org.eclipse.xtext.ecore')
 	compile "org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$versions.xtext"
-	compile "org.eclipse.emf:org.eclipse.emf.codegen:$versions.emfEcore"
-	compile "org.eclipse.xpand:org.eclipse.xpand:$versions.xpand"
-	compile "org.eclipse.xpand:org.eclipse.xtend:$versions.xpand"
+	compile "org.eclipse.emf:org.eclipse.emf.codegen"
+	compile "org.eclipse.xpand:org.eclipse.xpand"
+	compile "org.eclipse.xpand:org.eclipse.xtend"
 	compile "org.eclipse.platform:org.eclipse.equinox.common"
 	optional "org.eclipse.platform:org.eclipse.core.runtime"
 	optional "org.eclipse.jdt:org.eclipse.jdt.core"

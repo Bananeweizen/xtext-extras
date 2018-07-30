@@ -11,7 +11,7 @@ buildscript {
 	dependencies {
 		classpath "org.xtext:xtext-gradle-plugin:$versions.xtext_gradle_plugin"
 		classpath "io.typefox.gradle:gradle-p2gen:$versions.gradle_plugins"
-		classpath "io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE"
+		classpath "io.spring.gradle:dependency-management-plugin:$versions.dependency_management_plugin"
 	}
 }
 
@@ -28,9 +28,9 @@ subprojects {
 	apply plugin: 'java'
 	apply plugin: "io.spring.dependency-management"
 	dependencyManagement {
-	  	imports {
-	    	mavenBom 'org.eclipse.xtext:xtext-dev.bom:2.15.0-SNAPSHOT'
-	  	}
+		imports {
+			mavenBom "org.eclipse.xtext:xtext-dev.bom:$project.version"
+		}
 	}
 	if (findProperty('compileXtend') == 'true') {
 		apply plugin: 'org.xtext.xtend'

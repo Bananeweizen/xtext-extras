@@ -7,4 +7,6 @@ dependencies {
 	compile "org.eclipse.platform:org.eclipse.equinox.common"
 	compile "org.eclipse.platform:org.eclipse.core.runtime"
 	compile "org.eclipse.jdt:org.eclipse.jdt.core"
+	compile "org.eclipse.jdt:org.eclipse.jdt.compiler.apt"
+	compile "org.eclipse.jdt:org.eclipse.jdt.compiler.tool"
 }

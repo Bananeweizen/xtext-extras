@@ -14,5 +14,5 @@ dependencies {
 	compile "org.eclipse.jdt:org.eclipse.jdt.compiler.apt"
 	compile "org.eclipse.jdt:org.eclipse.jdt.compiler.tool"
 	compile "org.eclipse.xtext:org.eclipse.xtext.testing:$versions.xtext"
-	compile "junit:junit:$versions.junit"
+	compile "junit:junit"
 }

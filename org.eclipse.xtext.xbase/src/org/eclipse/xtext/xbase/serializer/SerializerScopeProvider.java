@@ -164,26 +164,25 @@ public class SerializerScopeProvider implements IScopeProvider, IFeatureNames {
 			return new SingletonScope(EObjectDescription.create(operator, feature), IScope.NULLSCOPE);
 		}
 		if (call instanceof XAssignment) {
-			String shorthandName = PropertyUtil.tryGetShorthandName(simpleName);
-			if (shorthandName != null) {
-				return new SingletonScope(EObjectDescription.create(shorthandName, feature), IScope.NULLSCOPE);
-			} else {
-				return IScope.NULLSCOPE;
-			}
+			return getAccessorScope(simpleName, name, feature);
 		}
 		if (call.isExplicitOperationCallOrBuilderSyntax() || ((JvmExecutable) feature).getParameters().size() > 1
 				|| (!call.isExtension() && ((JvmExecutable) feature).getParameters().size() == 1)) {
 			return new SingletonScope(EObjectDescription.create(name, feature), IScope.NULLSCOPE);
 		}
 
+		return getAccessorScope(simpleName, name, feature);
+	}
+
+	protected IScope getAccessorScope(String simpleName, QualifiedName qn, JvmIdentifiableElement feature) {
 		String shorthandName = PropertyUtil.tryGetShorthandName(simpleName);
 		if (shorthandName != null) {
 			List<IEObjectDescription> result = Lists.newArrayListWithCapacity(2);
 			result.add(EObjectDescription.create(shorthandName, feature));
-			result.add(EObjectDescription.create(name, feature));
+			result.add(EObjectDescription.create(qn, feature));
 			return new SimpleScope(result);
 		} else {
-			return new SingletonScope(EObjectDescription.create(name, feature), IScope.NULLSCOPE);
+			return new SingletonScope(EObjectDescription.create(qn, feature), IScope.NULLSCOPE);
 		}
 	}
 

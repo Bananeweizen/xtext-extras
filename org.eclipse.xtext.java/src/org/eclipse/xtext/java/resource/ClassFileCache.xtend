@@ -7,9 +7,12 @@
  *******************************************************************************/
 package org.eclipse.xtext.java.resource
 
-import java.util.HashMap
 import java.util.Map
+import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Function
 import org.eclipse.jdt.internal.compiler.env.IBinaryType
+import org.eclipse.jdt.internal.compiler.env.ITypeAnnotationWalker
+import org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment
 import org.eclipse.xtext.naming.QualifiedName
 import org.eclipse.xtext.util.internal.EmfAdaptable
 
@@ -23,22 +26,134 @@ class ClassFileCache {
 	//TODO: concurrency
 	//TODO: clear
 	//TODO: weak?
-	val Map<QualifiedName, IBinaryType> cache = new HashMap()
+	val Map<QualifiedName, IBinaryType> cache = new ConcurrentHashMap()
 	
 	def boolean containsKey(QualifiedName qualifiedName) {
 		return cache.containsKey(qualifiedName)
 	}
 	
 	def IBinaryType get(QualifiedName qualifiedName) {
-		return cache.get(qualifiedName)
+		val result = cache.get(qualifiedName)
+		if (result === NULL) {
+			return null
+		}
+		return result
 	}
 	
 	def void put(QualifiedName qualifiedName, IBinaryType answer) {
-		cache.put(qualifiedName, answer)
+		if (answer === null) {
+			cache.put(qualifiedName, NULL)
+		} else {
+			cache.put(qualifiedName, answer)
+		}
+	}
+	
+	def IBinaryType computeIfAbsent(QualifiedName qualifiedName, Function<? super QualifiedName, ? extends IBinaryType> fun) {
+		cache.computeIfAbsent(qualifiedName, fun)
 	}
 	
 	def void clear() {
 		cache.clear()
 	}
+	
+	static val NULL = new IBinaryType() {
+		
+		override enrichWithExternalAnnotationsFor(ITypeAnnotationWalker walker, Object member, LookupEnvironment environment) {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getAnnotations() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getEnclosingMethod() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getEnclosingTypeName() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getExternalAnnotationStatus() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getFields() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getGenericSignature() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getInterfaceNames() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getMemberTypes() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getMethods() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getMissingTypeNames() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getModule() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getName() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getSourceName() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getSuperclassName() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getTagBits() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getTypeAnnotations() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override isAnonymous() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override isLocal() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override isMember() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override sourceFileName() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getModifiers() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override isBinaryType() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+		override getFileName() {
+			throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		}
+		
+	} 
 	
 }
